@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+  api-gateway:
+    image: ${DOCKERHUB_USERNAME}/cafe-api-gateway:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - customer-services
+      - inventory-services
+      - menu-services
+      - order-services
+      - payment-services
+
+  customer-services:
+    image: ${DOCKERHUB_USERNAME}/cafe-customer-services:latest
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/customer-db
+
+  inventory-services:
+    image: ${DOCKERHUB_USERNAME}/cafe-inventory-services:latest
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/inventory-db
+
+  menu-services:
+    image: ${DOCKERHUB_USERNAME}/cafe-menu-services:latest
+    ports:
+      - "3003:3003"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/menu-db
+
+  order-services:
+    image: ${DOCKERHUB_USERNAME}/cafe-order-services:latest
+    ports:
+      - "3004:3004"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/order-db
+
+  payment-services:
+    image: ${DOCKERHUB_USERNAME}/cafe-payment-services:latest
+    ports:
+      - "3005:3005"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/payment-db
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+volumes:
+  mongodb_data:
