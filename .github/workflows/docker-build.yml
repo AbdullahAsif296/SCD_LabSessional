@@ -1,0 +1,57 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          [
+            { name: "api-gateway", path: "Cafe_Management_System/api-gateway" },
+            {
+              name: "customer-services",
+              path: "Cafe_Management_System/customer-services",
+            },
+            {
+              name: "inventory-services",
+              path: "Cafe_Management_System/inventory-services",
+            },
+            {
+              name: "menu-services",
+              path: "Cafe_Management_System/menu-services",
+            },
+            {
+              name: "order-services",
+              path: "Cafe_Management_System/order-services",
+            },
+            {
+              name: "payment-services",
+              path: "Cafe_Management_System/payment-services",
+            },
+          ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ 'abdullahasif2966' }}
+          password: ${{ 'dckr_pat_RcWxw1SLY3PWhJzv1K4jXIGBEqE' }}
+
+      - name: Build and push Docker image for ${{ matrix.service.name }}
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ matrix.service.path }}
+          push: true
+          tags: ${{ 'abdullahasif2966' }}/cafe-${{ matrix.service.name }}:latest
