@@ -1,0 +1,58 @@
+version: "3"
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - customer-services
+      - inventory-services
+      - menu-services
+      - order-services
+      - payment-services
+
+  customer-services:
+    build: ./customer-services
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/customer-db
+
+  inventory-services:
+    build: ./inventory-services
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/inventory-db
+
+  menu-services:
+    build: ./menu-services
+    ports:
+      - "3003:3003"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/menu-db
+
+  order-services:
+    build: ./order-services
+    ports:
+      - "3004:3004"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/order-db
+
+  payment-services:
+    build: ./payment-services
+    ports:
+      - "3005:3005"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/payment-db
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
