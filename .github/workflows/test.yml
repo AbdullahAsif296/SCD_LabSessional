@@ -1,0 +1,60 @@
+name: Test Microservices
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          [
+            { name: "api-gateway", path: "Cafe_Management_System/api-gateway" },
+            {
+              name: "customer-services",
+              path: "Cafe_Management_System/customer-services",
+            },
+            {
+              name: "inventory-services",
+              path: "Cafe_Management_System/inventory-services",
+            },
+            {
+              name: "menu-services",
+              path: "Cafe_Management_System/menu-services",
+            },
+            {
+              name: "order-services",
+              path: "Cafe_Management_System/order-services",
+            },
+            {
+              name: "payment-services",
+              path: "Cafe_Management_System/payment-services",
+            },
+          ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: ${{ matrix.service.path }}/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.service.path }}
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd ${{ matrix.service.path }}
+          npm test
